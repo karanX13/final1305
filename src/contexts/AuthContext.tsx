@@ -17,7 +17,7 @@ import {
 
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
-import { auth, db } from "@/firebase";
+import { auth, db } from "@/lib/firebase";
 
 interface AuthContextType {
   user: User | null;

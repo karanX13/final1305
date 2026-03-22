@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db } from "@/lib/firebase";
 import Navbar from "@/components/layout/Navbar";
 import { Loader2 } from "lucide-react";
 
@@ -24,8 +24,11 @@ const Viewer = () => {
 
       try {
         const snapshot = await getDoc(doc(db, "projects", id));
+
         if (snapshot.exists()) {
-          setProject(snapshot.data() as ProjectData);
+          const data = snapshot.data() as ProjectData;
+          console.log("MODEL URL:", data.modelUrl); // ✅ correct place
+          setProject(data);
         }
       } catch (error) {
         console.error("Error loading project:", error);
@@ -65,19 +68,27 @@ const Viewer = () => {
                 </div>
               )}
 
+            
+           {/* 
+<p className="mb-2 text-sm text-gray-400">
+  Model URL: {project.modelUrl}
+</p>
+*/}
+              
+
+
               {project.status === "completed" && project.modelUrl && (
                 <div className="rounded-xl overflow-hidden shadow-xl">
                   <model-viewer
                     src={project.modelUrl}
-                    alt={project.name}
                     auto-rotate
                     camera-controls
-                    shadow-intensity="1"
-                    exposure="1"
+                    scale="15 15 15"
+                    camera-orbit="0deg 75deg 3m"
                     style={{
                       width: "100%",
-                      height: "70vh",
-                      backgroundColor: "#111"
+                      height: "500px",
+                      backgroundColor: "#111",
                     }}
                   />
                 </div>

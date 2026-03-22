@@ -1,21 +1,32 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
+/* Pages */
+
+import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
+import Upload from "@/pages/Upload";
+import Viewer from "@/pages/Viewer";
 import Tutorials from "@/pages/Tutorials";
+import ProjectPage from "@/pages/Project";
+
+/* Landing */
+
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/landing/Hero";
 import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/landing/Footer";
-import Viewer from "./pages/Viewer";
-import Upload from "./pages/Upload";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+
+/* React Query */
 
 const queryClient = new QueryClient();
 
@@ -25,7 +36,6 @@ function Home() {
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
 
-      {/* Glow Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(0,200,255,0.15),_transparent_60%)] pointer-events-none" />
 
       <Navbar />
@@ -59,17 +69,21 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
+
           <Toaster />
           <Sonner />
 
           <BrowserRouter>
             <Routes>
-<Route path="/tutorials" element={<Tutorials />} />
-              {/* Public */}
+
+              {/* Public Routes */}
+
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/tutorials" element={<Tutorials />} />
 
-              {/* Protected */}
+              {/* Protected Routes */}
+
               <Route
                 path="/dashboard"
                 element={
@@ -78,14 +92,9 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-<Route
-  path="/viewer/:id"
-  element={
-    <ProtectedRoute>
-      <Viewer />
-    </ProtectedRoute>
-  }
-/>
+
+              {/* 🔥 FIXED: both routes now work */}
+
               <Route
                 path="/upload"
                 element={
@@ -95,11 +104,40 @@ const App = () => {
                 }
               />
 
+              <Route
+                path="/create"
+                element={
+                  <ProtectedRoute>
+                    <Upload />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/viewer/:id"
+                element={
+                  <ProtectedRoute>
+                    <Viewer />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/project/:id"
+                element={
+                  <ProtectedRoute>
+                    <ProjectPage />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* 404 */}
+
               <Route path="*" element={<NotFound />} />
 
             </Routes>
           </BrowserRouter>
+
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

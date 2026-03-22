@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { db } from "@/firebase";
+import { db } from "@/lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { updateDoc, doc } from "firebase/firestore";
+import { generate3DModel } from "@/api/meshyApi";
 
 /* -------------------- TYPES -------------------- */
 
@@ -67,23 +68,14 @@ export function useImageTo3D() {
         settings,
       });
 
-      setProgress(25);
+      setProgress(40);
 
-      /* -------------------- FAKE AI PROCESSING -------------------- */
+      /* -------------------- CALL AI API -------------------- */
 
-      let currentProgress = 25;
+      const aiResult = await generate3DModel(imageUrl);
 
-      const interval = setInterval(() => {
-        currentProgress += 10;
-        if (currentProgress < 90) {
-          setProgress(currentProgress);
-        }
-      }, 300);
-
-      setTimeout(async () => {
-        clearInterval(interval);
-
-        const modelUrl = "/demo-model.glb";
+      if (aiResult.status === "completed") {
+        const modelUrl = aiResult.modelUrl;
 
         await updateDoc(doc(db, "projects", projectId), {
           status: "completed",
@@ -98,9 +90,9 @@ export function useImageTo3D() {
           modelUrl,
           projectId,
         });
+      }
 
-        setIsProcessing(false);
-      }, 2500);
+      setIsProcessing(false);
     } catch (err) {
       console.error(err);
 

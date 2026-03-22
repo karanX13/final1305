@@ -1,18 +1,35 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db } from "@/lib/firebase";
+import { getModelFromPrompt } from "@/lib/modelMapper";
 
-export const createProject = async (
-  userId: string,
-  name: string,
-  prompt?: string
-) => {
-  const docRef = await addDoc(collection(db, "projects"), {
-    name,
-    userId,
-    prompt: prompt || "",
-    status: "processing",
-    createdAt: serverTimestamp(),
-  });
+type CreateProjectParams = {
+  userId: string;
+  name: string;
+  prompt?: string;
+  modelUrl: string; // ✅ ADD THIS
+};
 
-  return docRef.id;
+export const createProject = async ({
+  userId,
+  name,
+  prompt = "",
+}: CreateProjectParams) => {
+  try {
+    // 🔥 THIS IS THE MAIN FIX
+    const modelUrl = getModelFromPrompt(prompt);
+
+    const docRef = await addDoc(collection(db, "projects"), {
+      userId,
+      name,
+      prompt,
+      modelUrl,          // ✅ correct model stored
+      status: "completed",
+      createdAt: serverTimestamp(),
+    });
+
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error;
+  }
 };
