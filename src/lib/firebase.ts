@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// ✅ Validate env variables first
+/* 🔥 Firebase Config (from .env) */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,16 +13,24 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// 🔎 Debug check (remove after it works)
-if (!firebaseConfig.apiKey) {
-  console.error("❌ Firebase API Key is missing. Check your .env file.");
+/* 🚨 Strict Validation (better than single check) */
+const missingKeys = Object.entries(firebaseConfig)
+  .filter(([_, value]) => !value)
+  .map(([key]) => key);
+
+if (missingKeys.length > 0) {
+  console.error(
+    `❌ Missing Firebase env variables: ${missingKeys.join(", ")}`
+  );
 }
 
+/* 🚀 Initialize App */
 const app = initializeApp(firebaseConfig);
 
-// Export services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+/* 📦 Services */
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-export default app;
+/* 🔥 Export everything cleanly */
+export { app, auth, db, storage };

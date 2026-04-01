@@ -40,18 +40,8 @@ const AIImageGenerator = ({ onGenerate, onPromptChange }: Props) => {
 />
       </div>
 
-      <Button
-        onClick={handleGenerate}
-        className="w-full bg-gradient-to-r from-cyan-500 to-purple-500"
-      >
-        <Sparkles className="w-4 h-4 mr-2" />
-        Generate Image
-      </Button>
+      
 
-      <div className="flex items-center text-sm text-gray-400 gap-2">
-        <Sparkles className="w-4 h-4" />
-        You can directly generate 3D model without clicking this
-      </div>
 
     </div>
   );

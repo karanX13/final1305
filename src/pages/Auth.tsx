@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
@@ -35,11 +35,20 @@ export default function Auth() {
     }
 
     if (!result?.error) {
-      // clear fields
       setUsername("");
       setEmail("");
       setPassword("");
+      navigate("/");
+    } else {
+      alert(result.error.message);
+    }
+  };
 
+  /* 🔥 Google Login */
+  const handleGoogleLogin = async () => {
+    const result = await signInWithGoogle();
+
+    if (!result?.error) {
       navigate("/");
     } else {
       alert(result.error.message);
@@ -90,6 +99,25 @@ export default function Auth() {
           {isLogin ? "Login" : "Sign Up"}
         </button>
 
+      {/* OR Divider */}
+<div className="flex items-center gap-2 text-zinc-400 text-sm">
+  <div className="flex-1 h-px bg-zinc-700" />
+  OR
+  <div className="flex-1 h-px bg-zinc-700" />
+</div>
+
+{/* Google Button */}
+<button
+  onClick={handleGoogleLogin}
+  className="w-full bg-white text-black hover:bg-gray-200 transition p-2 rounded font-medium flex items-center justify-center gap-2"
+>
+  <img
+    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+    alt="google"
+    className="w-5 h-5"
+  />
+  Continue with Google
+</button>
         {/* Toggle Login / Signup */}
         <p
           className="text-sm text-center cursor-pointer text-zinc-400 hover:text-white transition"

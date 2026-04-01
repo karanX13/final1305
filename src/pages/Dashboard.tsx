@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -8,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/layout/Navbar";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useAuth } from "@/contexts/AuthContext";
 
 import {
@@ -23,7 +21,7 @@ import {
 import { db } from "@/lib/firebase";
 import { Project } from "@/types/project";
 
-/* ---------------- Firestore Type ---------------- */
+/* ---------------- Types ---------------- */
 
 interface FirestoreProject extends Project {
   createdAt: Timestamp;
@@ -40,15 +38,19 @@ const Dashboard = () => {
   const [projects, setProjects] = useState<FirestoreProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  /* ---------------- REALTIME FETCH ---------------- */
+  /* ---------------- REALTIME FETCH (ONLY CURRENT USER) ---------------- */
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setProjects([]);
+      setIsLoading(false);
+      return;
+    }
 
     const q = query(
       collection(db, "projects"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      where("userId", "==", user.uid), // ✅ current user only
+      orderBy("createdAt", "desc")     // ✅ latest first
     );
 
     const unsubscribe = onSnapshot(
@@ -73,9 +75,9 @@ const Dashboard = () => {
 
   /* ---------------- Stats ---------------- */
 
-const processingCount = projects.filter(
-  (project) => project.status !== "completed" && project.status !== "failed"
-).length;
+  const processingCount = projects.filter(
+    (p) => p.status !== "completed" && p.status !== "failed"
+  ).length;
 
   const completedCount = projects.filter(
     (p) => p.status === "completed"
@@ -94,14 +96,14 @@ const processingCount = projects.filter(
   /* ---------------- Search Filter ---------------- */
 
   const filteredProjects = projects.filter((p) =>
-    p.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    (p.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  /* ---------------- Transform for ProjectCard ---------------- */
+  /* ---------------- Transform ---------------- */
 
   const transformedProjects = filteredProjects.map((p) => ({
     id: p.id,
-    name: p.name,
+    name: p.name || "Untitled Project",
     thumbnail:
       p.imageUrl ||
       p.thumbnail_url ||
@@ -121,7 +123,6 @@ const processingCount = projects.filter(
         <div className="container mx-auto">
 
           {/* Header */}
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -137,7 +138,6 @@ const processingCount = projects.filter(
           </motion.div>
 
           {/* Stats */}
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StatCard label="Total Projects" value={projects.length} />
             <StatCard label="Processing" value={processingCount} />
@@ -146,7 +146,6 @@ const processingCount = projects.filter(
           </div>
 
           {/* Toolbar */}
-
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
             <div className="relative md:w-80 w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -168,7 +167,6 @@ const processingCount = projects.filter(
           </div>
 
           {/* Loading */}
-
           {isLoading && (
             <div className="flex justify-center py-16">
               <Loader2 className="w-8 h-8 animate-spin" />
@@ -176,7 +174,6 @@ const processingCount = projects.filter(
           )}
 
           {/* Projects */}
-
           {!isLoading && transformedProjects.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {transformedProjects.map((project, index) => (
@@ -190,7 +187,6 @@ const processingCount = projects.filter(
           )}
 
           {/* Empty State */}
-
           {!isLoading && transformedProjects.length === 0 && (
             <div className="text-center py-16">
               <Box className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />

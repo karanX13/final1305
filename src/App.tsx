@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import Settings from "@/pages/Settings";
 
 /* Pages */
 
@@ -35,7 +36,6 @@ const queryClient = new QueryClient();
 function Home() {
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
-
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(0,200,255,0.15),_transparent_60%)] pointer-events-none" />
 
       <Navbar />
@@ -69,7 +69,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-
           <Toaster />
           <Sonner />
 
@@ -77,7 +76,6 @@ const App = () => {
             <Routes>
 
               {/* Public Routes */}
-
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/tutorials" element={<Tutorials />} />
@@ -92,8 +90,6 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-
-              {/* 🔥 FIXED: both routes now work */}
 
               <Route
                 path="/upload"
@@ -131,13 +127,22 @@ const App = () => {
                 }
               />
 
-              {/* 404 */}
+              {/* ✅ NEW: SETTINGS ROUTE */}
 
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* 404 */}
               <Route path="*" element={<NotFound />} />
 
             </Routes>
           </BrowserRouter>
-
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

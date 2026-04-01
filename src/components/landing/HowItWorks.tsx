@@ -24,7 +24,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="py-28 px-6 relative overflow-hidden">
+   <section className="pt-15 pb-28 px-6">
 
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_60%)] pointer-events-none" />
@@ -57,7 +57,8 @@ const HowItWorks = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.2 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10 }}
+                whileHover={{ y: -18, scale: 1.05 }}
+              
                 className="relative group backdrop-blur-xl bg-white/5 border border-white/10 
                            rounded-2xl p-8 text-center transition-all duration-300 
                            hover:border-purple-400/40 hover:shadow-2xl hover:shadow-purple-500/20"
